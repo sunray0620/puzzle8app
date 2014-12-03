@@ -5,7 +5,7 @@
 # Home page
 GET     /                     		controllers.Application.index()
 GET     /puzzle                     controllers.Application.puzzle()
-POST    /validate                   controllers.Application.validate()
+POST    /validate	    			controllers.Application.validate()
 POST    /solve                      controllers.Application.solve()
 
 # Map static resources from the /public folder to the /assets URL path
