@@ -21,12 +21,20 @@
 
 	function readBoardState() {
 		var ret = [];
+		for (var i = 0; i < 9; ++i) {
+			ret[i] = 0;
+		}
+		
 		var jqpWrapper = $(".jqp-wrapper")[0];
 		$(".jqp-piece", jqpWrapper).each(function() {
 			var curPos = parseInt( $(this).attr("current") );
 			var curValue = parseInt( $("span", this).text() );
 			ret[curPos] = curValue;
 		})
+		
+		for (var i = 0; i < 9; ++i) {
+			ret[i] = (ret[i] + 8) % 9;
+		}
 		console.log(ret);
 		return ret;
 	}

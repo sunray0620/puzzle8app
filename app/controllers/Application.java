@@ -1,6 +1,8 @@
 package controllers;
 
 //import play.*;
+import model.PuzzleBoard;
+import model.PuzzleSolution;
 import play.mvc.Controller;
 import play.mvc.Http.RequestBody;
 import play.mvc.Result;
@@ -19,8 +21,12 @@ public class Application extends Controller {
 
 	public static Result validate() {
 		RequestBody body = request().body();
+		PuzzleBoard initBoard = new PuzzleBoard();
+		initBoard.initializeBoard(body.asText());
+		PuzzleSolution puzzleSln = new PuzzleSolution(initBoard);
+		String sln = puzzleSln.solvePuzzle();
 
-		return ok("Got body: " + body.asText());
+		return ok(sln);
 	}
 
 	public static Result solve() {
