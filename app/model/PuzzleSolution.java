@@ -38,7 +38,8 @@ public class PuzzleSolution {
 				System.out.println(String.format("move: %s", curNode.movePath));
 				return curNode.movePath;
 			}
-
+			int curSpacePos = curNode.board.spacePos;
+			
 			// Visit all its neighbors, by exploring possible moves.
 			PuzzleBoard moveUpState = curNode.board.moveUp();
 			if (moveUpState != null && !seen.contains(moveUpState.state)) {
@@ -46,7 +47,8 @@ public class PuzzleSolution {
 				PuzzleSolutionNode newSolutionNode = new PuzzleSolutionNode();
 				newSolutionNode.board = moveUpState;
 				newSolutionNode.distanceToTarget = moveUpState.getTotalStateDistance();
-				newSolutionNode.movePath = curNode.movePath + '1';
+				int movedTile = moveUpState.getValue(curSpacePos);
+				newSolutionNode.movePath = curNode.movePath + String.format("%d,", movedTile);
 				pqueue.pushBack(newSolutionNode);
 			}
 
@@ -56,7 +58,8 @@ public class PuzzleSolution {
 				PuzzleSolutionNode newSolutionNode = new PuzzleSolutionNode();
 				newSolutionNode.board = moveDownState;
 				newSolutionNode.distanceToTarget = moveDownState.getTotalStateDistance();
-				newSolutionNode.movePath = curNode.movePath + '2';
+				int movedTile = moveDownState.getValue(curSpacePos);
+				newSolutionNode.movePath = curNode.movePath + String.format("%d,", movedTile);
 				pqueue.pushBack(newSolutionNode);
 			}
 
@@ -66,7 +69,8 @@ public class PuzzleSolution {
 				PuzzleSolutionNode newSolutionNode = new PuzzleSolutionNode();
 				newSolutionNode.board = moveLeftState;
 				newSolutionNode.distanceToTarget = moveLeftState.getTotalStateDistance();
-				newSolutionNode.movePath = curNode.movePath + '3';
+				int movedTile = moveLeftState.getValue(curSpacePos);
+				newSolutionNode.movePath = curNode.movePath + String.format("%d,", movedTile);
 				pqueue.pushBack(newSolutionNode);
 			}
 
@@ -76,7 +80,8 @@ public class PuzzleSolution {
 				PuzzleSolutionNode newSolutionNode = new PuzzleSolutionNode();
 				newSolutionNode.board = moveRightState;
 				newSolutionNode.distanceToTarget = moveRightState.getTotalStateDistance();
-				newSolutionNode.movePath = curNode.movePath + '4';
+				int movedTile = moveRightState.getValue(curSpacePos);
+				newSolutionNode.movePath = curNode.movePath + String.format("%d,", movedTile);
 				pqueue.pushBack(newSolutionNode);
 			}
 		}

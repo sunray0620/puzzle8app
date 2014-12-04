@@ -5,14 +5,14 @@
 <div id="puzzleWrapper" style="width:500px; margin-left:auto; margin-right:auto">
 	<h2>Enjoy the puzzle!</h2>
 	<div>
-		<img src="@routes.Assets.at("images/berlin.jpg")" alt="Animals crossing" class="jqPuzzle jqp-r3-c3-h9" />
+		<img src="@routes.Assets.at("images/steven.jpg")" alt="Animals crossing" class="jqPuzzle jqp-r3-c3-h9" />
 	</div>
 	
 	<div style="margin:10px 0 0 0">
 		<a href="javascript: void(0)" class="myButton" onclick="validateBoard()">Validate</a>
 		<a href="javascript: void(0)" class="myButton" onclick="showAnswer()">Show answer</a>
 		<a href="javascript: void(0)" class="myButton" onclick="runForMe()">Run for me</a>
-		<div id="requestStatus"></div>
+		<div id="requestStatus" style="margin-top:10px; color:green"></div>
 	</div>
 
 <div>
@@ -35,7 +35,6 @@
 		for (var i = 0; i < 9; ++i) {
 			ret[i] = (ret[i] + 8) % 9;
 		}
-		console.log(ret);
 		return ret;
 	}
 	
@@ -48,26 +47,117 @@
   			contentType: "text/plain",
   			dataType: "text",
 		}).done(function( data, textStatus, jqXHR ) {
-			console.log("Success");
-			console.log(data);
-			console.log(textStatus);
-			console.log(jqXHR);
+			if(data.length == 0) {
+				showMsg("Already on completed state");
+			} else if(data == "NULL") {
+				showMsg("Invalid board state");
+			} else {
+				showMsg("Valid board state");
+			}
 		}).fail(function( jqXHR, textStatus, errorThrown ) {
-			console.log("Failed");
-			console.log(jqXHR);
-			console.log(textStatus);
-			console.log(errorThrown);
+			showMsg(errorThrown);
 		}).always(function() {
 		
 		})
 	}
 	
 	function showAnswer() {
-		console.log("In showAnswer()");
+		var curState = readBoardState();
+		$.ajax({
+			type: "POST",
+  			url: "http://localhost:9000/validate",
+  			data: curState.join(),
+  			contentType: "text/plain",
+  			dataType: "text",
+		}).done(function( data, textStatus, jqXHR ) {
+			slnMoves = processSolutionString(data);
+			moves = getPrintableMoves(slnMoves);
+			msgToBeShown = "Move the tiles in following order <br>";
+			msgToBeShown += moves.join(", ");
+			showMsg(msgToBeShown);
+		}).fail(function( jqXHR, textStatus, errorThrown ) {
+			showMsg(errorThrown);
+		}).always(function() {
+		
+		})
 	}
 	
 	function runForMe() {
-		console.log("In runForMe()");
+		var curState = readBoardState();
+		$.ajax({
+			type: "POST",
+  			url: "http://localhost:9000/validate",
+  			data: curState.join(),
+  			contentType: "text/plain",
+  			dataType: "text",
+		}).done(function( data, textStatus, jqXHR ) {
+			showMsg("Watch this!");
+			slnMoves = processSolutionString(data);
+			moves = getPrintableMoves(slnMoves);
+			for(var i = 0; i < moves.length; ++i) {
+				setTimeout(moveTile, 400 * i, moves[i]);
+			}
+			
+		}).fail(function( jqXHR, textStatus, errorThrown ) {
+			showMsg(errorThrown);
+		}).always(function() {
+		
+		})
+	}
+	
+	function processSolutionString(slnStr) {
+		movesStrArr = slnStr.split(",");
+		moves = []
+		for (var i = 0; i < movesStrArr.length - 1; ++i) {
+			moves[i] = parseInt(movesStrArr[i]);
+		}
+		return moves;
+	}
+	
+	function getPrintableMoves(originalMoves) {
+		moves = [];
+		for (var i = 0; i < movesStrArr.length - 1; ++i) {
+			moves[i] = originalMoves[i] + 1;
+		}
+		return moves;
+	}
+	
+	function moveTile(value) {
+		var tileToMove = getTileByValue(value);
+		tileToMove.click();
+	}
+	
+	function getTileByPos(pos) {
+		var jqpWrapper = $(".jqp-wrapper")[0];
+		var ret;
+		$(".jqp-piece", jqpWrapper).each(function() {
+			var curPos = parseInt( $(this).attr("current") );
+			if (curPos == pos) {
+				ret = $(this);
+			}
+		})
+		return ret;
+	}
+	
+	function getTileByValue(value) {
+		var jqpWrapper = $(".jqp-wrapper")[0];
+		var ret;
+		$(".jqp-piece", jqpWrapper).each(function() {
+			var curValue = parseInt( $("span", this).text() );
+			if (curValue == value) {
+				ret = $(this);
+			}
+		})
+		return ret;
+	}
+	
+	function showMsg(msg) {
+		clearMsgPane();
+		$("#requestStatus").html(msg);
+	}
+	
+	function clearMsgPane() {
+		$("#requestStatus").html("");
 	}
 </script>
 	
